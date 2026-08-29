@@ -1,0 +1,48 @@
+node_modules
+dist
+.output
+.nitro
+.tanstack
+.vite
+.vercel
+artifacts
+coverage
+playwright-report
+test-results
+*.log
+*.tsbuildinfo
+.DS_Store
+
+# Secrets and local environment — never commit
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+credentials.json
+service-account*.json
+
+# Auth / database credential dumps
+*.sqlite
+*.sqlite3
+*.db
+
+# Uploaded user documents (runtime; production stores BYTEA in Postgres)
+uploads
+tmp
+temp
+.cache
+
+# Preview / generator runtime
+.grok/preview.log
+.grok/og-pending
+.grok/favicon-preview.png
+.grok/status
+
+# QA screenshots (keep the sample PDF fixture)
+screenshots/*.png
+screenshots/*.json
+
+# Generated router tree (TanStack regenerates on dev/build)
+src/routeTree.gen.ts
