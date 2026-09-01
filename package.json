@@ -1,0 +1,35 @@
+{
+  "name": "titlebridge-platform",
+  "version": "1.0.0",
+  "description": "Secure electronic vehicle titling and vehicle records management platform",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc -b && vite build",
+    "lint": "eslint .",
+    "preview": "vite preview",
+    "type-check": "tsc --noEmit"
+  },
+  "keywords": ["titlebridge", "vehicle", "title", "react"],
+  "author": "",
+  "license": "UNLICENSED",
+  "dependencies": {
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "react-router-dom": "^7.0.0"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.0.0",
+    "@types/node": "^22.0.0",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "@vitejs/plugin-react": "^4.0.0",
+    "eslint": "^9.0.0",
+    "eslint-plugin-react-hooks": "^5.0.0",
+    "eslint-plugin-react-refresh": "^0.4.0",
+    "globals": "^15.0.0",
+    "typescript": "~5.6.0",
+    "typescript-eslint": "^8.0.0",
+    "vite": "^6.0.0"
+  }
+}
