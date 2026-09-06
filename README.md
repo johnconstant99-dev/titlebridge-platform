@@ -138,6 +138,8 @@ Do not commit secrets. Never add a `.env` file in the App Builder sandbox. Hoste
 
 Hosted production (`VERCEL`) **refuses to start** on the in-memory preview database or an ephemeral auth secret.
 
+This repo is a TanStack Start / Nitro app, not a Vite SPA. In the Vercel project: Framework Preset **TanStack Start**, leave **Output Directory empty** (do not use `dist`), and add `DATABASE_URL`, `BETTER_AUTH_SECRET`, and `BETTER_AUTH_URL` before redeploying. `vercel.json` sets `"framework": "tanstack-start"`. Create the Postgres database at [console.neon.tech](https://console.neon.tech) and paste the pooled connection string into `DATABASE_URL`.
+
 Development seed/demo organizations load only on local PGLite preview. They never load when `NODE_ENV=production`, `VERCEL`, or `DATABASE_URL` is set. No automatic test users are created in production.
 
 ## Tests
