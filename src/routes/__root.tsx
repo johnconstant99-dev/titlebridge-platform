@@ -1,5 +1,6 @@
 import { QueryClientProvider } from "@tanstack/react-query";
 import { createRootRoute, HeadContent, Outlet, Scripts } from "@tanstack/react-router";
+import { Analytics } from "@vercel/analytics/react";
 import { useState } from "react";
 import { AuthProvider } from "@/lib/auth/provider";
 import { PreviewHostBridge } from "@/components/preview-host-bridge";
@@ -56,6 +57,7 @@ function RootDocument() {
             <Outlet />
           </QueryClientProvider>
         </AuthProvider>
+        <Analytics />
         <Scripts />
       </body>
     </html>
