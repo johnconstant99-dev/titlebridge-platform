@@ -115,15 +115,46 @@ const baseURL = explicitBaseURL ?? {
 
 // Origins Better Auth accepts on credentialed POSTs (sign-up/sign-in, etc.).
 // Missing entries here surface as FORBIDDEN "Invalid origin".
-const trustedOrigins: string[] = explicitBaseURL
-  ? [explicitBaseURL, ...LOCAL_DEV_ORIGINS]
+const v0PreviewOrigins = [
+  env("V0_RUNTIME_URL"),
+  env("V0_DEV_APP_URL"),
+  env("V0_BUILD_URL"),
+  env("V0_SANDBOX_URL"),
+  env("VERCEL_URL") ? `https://${env("VERCEL_URL")}` : undefined,
+  env("VERCEL_PROJECT_PRODUCTION_URL")
+    ? `https://${env("VERCEL_PROJECT_PRODUCTION_URL")}`
+    : undefined,
+].filter((origin): origin is string => Boolean(origin));
+
+const staticTrustedOrigins: string[] = explicitBaseURL
+  ? [explicitBaseURL, ...v0PreviewOrigins, ...LOCAL_DEV_ORIGINS]
   : [
-      // Host wildcards (matched against Origin's host)
+      // Host wildcards (matched against Origin)
       ...previewAllowedHosts,
       // Full-origin wildcards (matched against Origin)
       ...previewAllowedHosts.flatMap((host) => [`https://${host}`, `http://${host}`]),
+      ...v0PreviewOrigins,
       ...LOCAL_DEV_ORIGINS,
     ];
+
+// The preview proxy can rotate between v0.build and vercel.run hosts without
+// exposing the active host as an environment variable. Trust only the signed
+// preview host shapes, never an arbitrary request origin.
+const trustedOrigins = async (request?: Request): Promise<string[]> => {
+  const origin = request?.headers.get("origin");
+  if (!origin) return staticTrustedOrigins;
+
+  try {
+    const url = new URL(origin);
+    const isV0Preview =
+      url.protocol === "https:" &&
+      ((/^[a-z0-9-]+\.v0\.build$/i.test(url.hostname)) ||
+        (/^sb-[a-z0-9-]+\.vercel\.run$/i.test(url.hostname)));
+    return isV0Preview ? [...staticTrustedOrigins, url.origin] : staticTrustedOrigins;
+  } catch {
+    return staticTrustedOrigins;
+  }
+};
 
 const databaseUrl = env("DATABASE_URL");
 
