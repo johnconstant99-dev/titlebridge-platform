@@ -11,6 +11,7 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { test } from "node:test";
 import { isMigrationFile, migrationName, pendingMigrations } from "./migration-plan.mjs";
+import { validateDatabaseUrl } from "./database-url.mjs";
 import { projectRoot } from "./with-app-env.mjs";
 
 const AUTH_MIGRATION = "0001_auth.sql";
@@ -25,6 +26,18 @@ function authSchemaCopy(root) {
   if (!existsSync(copy) || !existsSync(source)) return null;
   return { copy: readFileSync(copy, "utf8"), source: readFileSync(source, "utf8") };
 }
+
+test("DATABASE_URL validation accepts PostgreSQL URLs", () => {
+  const value = "postgresql://user:password@ep-example.us-east-2.aws.neon.tech/app?sslmode=require";
+  assert.equal(validateDatabaseUrl(value), value);
+  assert.equal(validateDatabaseUrl(""), undefined);
+});
+
+test("DATABASE_URL validation rejects malformed and placeholder URLs", () => {
+  assert.throws(() => validateDatabaseUrl("not-a-url"), /valid PostgreSQL connection string/);
+  assert.throws(() => validateDatabaseUrl("https://db.example.com/app"), /postgres/);
+  assert.throws(() => validateDatabaseUrl("postgres://user:password@base/app"), /placeholder host/);
+});
 
 test("_migrations keys on basename, not path", () => {
   assert.equal(migrationName("/migrations/0002_todos.sql"), "0002_todos.sql");
