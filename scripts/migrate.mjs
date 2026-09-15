@@ -19,14 +19,6 @@ import pg from "pg";
 import { pendingMigrations } from "./migration-plan.mjs";
 import { validateDatabaseUrl } from "./database-url.mjs";
 
-const databaseUrl = validateDatabaseUrl();
-if (!databaseUrl) {
-  console.log(
-    "[migrate] DATABASE_URL not set — skipping (the PGLite fallback migrates itself).",
-  );
-  process.exit(0);
-}
-
 const migrationsDir = join(dirname(fileURLToPath(import.meta.url)), "..", "migrations");
 
 async function main() {
@@ -37,9 +29,17 @@ async function main() {
     console.log("[migrate] no migrations/ directory — nothing to do.");
     return;
   }
-  // An app with no schema of its own must not pay for a database connection.
+  // An app with no schema of its own must not validate or connect to a database.
   if (pendingMigrations(entries, []).length === 0) {
     console.log("[migrate] no migrations — nothing to do.");
+    return;
+  }
+
+  const databaseUrl = validateDatabaseUrl();
+  if (!databaseUrl) {
+    console.log(
+      "[migrate] DATABASE_URL not set — skipping (the PGLite fallback migrates itself).",
+    );
     return;
   }
 
