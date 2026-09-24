@@ -3,7 +3,9 @@ export type PlaidEnvName = "sandbox" | "production";
 export function plaidConfig() {
   const clientId = process.env.PLAID_CLIENT_ID?.trim();
   const secret = process.env.PLAID_SECRET?.trim();
-  const templateId = process.env.PLAID_TEMPLATE_ID?.trim();
+  const templateId =
+    process.env.PLAID_TEMPLATE_ID?.trim() ||
+    process.env.PLAID_IDV_TEMPLATE_ID?.trim();
   const rawEnv = (process.env.PLAID_ENV ?? "production").trim().toLowerCase();
   const env: PlaidEnvName = rawEnv === "sandbox" ? "sandbox" : "production";
   return {
