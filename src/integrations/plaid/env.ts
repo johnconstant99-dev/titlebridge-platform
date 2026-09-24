@@ -1,12 +1,17 @@
 export type PlaidEnvName = "sandbox" | "production";
 
+function clean(value: string | undefined | null): string | undefined {
+  if (!value) return undefined;
+  const trimmed = value.trim().replace(/^['"]|['"]$/g, "").trim();
+  return trimmed.length ? trimmed : undefined;
+}
+
 export function plaidConfig() {
-  const clientId = process.env.PLAID_CLIENT_ID?.trim();
-  const secret = process.env.PLAID_SECRET?.trim();
+  const clientId = clean(process.env.PLAID_CLIENT_ID);
+  const secret = clean(process.env.PLAID_SECRET);
   const templateId =
-    process.env.PLAID_TEMPLATE_ID?.trim() ||
-    process.env.PLAID_IDV_TEMPLATE_ID?.trim();
-  const rawEnv = (process.env.PLAID_ENV ?? "production").trim().toLowerCase();
+    clean(process.env.PLAID_TEMPLATE_ID) || clean(process.env.PLAID_IDV_TEMPLATE_ID);
+  const rawEnv = (clean(process.env.PLAID_ENV) ?? "production").toLowerCase();
   const env: PlaidEnvName = rawEnv === "sandbox" ? "sandbox" : "production";
   return {
     clientId,
@@ -14,7 +19,7 @@ export function plaidConfig() {
     templateId,
     env,
     configured: Boolean(clientId && secret && templateId),
-    webhookSecret: process.env.PLAID_WEBHOOK_SECRET?.trim() ?? null,
+    webhookSecret: clean(process.env.PLAID_WEBHOOK_SECRET) ?? null,
     host: env === "sandbox" ? "https://sandbox.plaid.com" : "https://production.plaid.com",
   };
 }
