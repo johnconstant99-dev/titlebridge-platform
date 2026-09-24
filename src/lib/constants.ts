@@ -1,9 +1,10 @@
 export const APP_NAME = "TitleBridge";
-export const APP_TAGLINE = "Digital ownership infrastructure";
+export const APP_TAGLINE = "A clearer path through vehicle transactions.";
+export const APP_CAMPAIGN = "The Future of Vehicle Workflows Starts With Trust.";
 export const PHASE_LABEL = "Phase 1B Private Beta";
 
 export const PLATFORM_DISCLAIMER =
-  "TitleBridge is an independent technology platform and is not a government agency or motor vehicle department. Availability of electronic title, registration, lien, and vehicle-record services depends on jurisdiction, authorization, and participating providers.";
+  "TitleBridge is an independent technology platform and is not a government agency or motor vehicle department. Availability of electronic title, registration, lien, and vehicle-record services depends on jurisdiction, authorization, and participating providers. TitleBridge.org is not affiliated with Title Bridge, LLC.";
 
 export const IDENTITY_NOTICE =
   "Identity verification will be required before regulated vehicle transactions can be submitted.";

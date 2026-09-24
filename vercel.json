@@ -1,4 +1,12 @@
 {
-"$schema": "https://openapi.vercel.sh/vercel.json",
-"framework": "tanstack-start"
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "framework": "tanstack-start",
+  "redirects": [
+    {
+      "source": "/:path*",
+      "has": [{ "type": "host", "value": "www.titlebridge.org" }],
+      "destination": "https://titlebridge.org/:path*",
+      "permanent": true
+    }
+  ]
 }

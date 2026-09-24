@@ -4,7 +4,7 @@ import { Logo } from "@/components/branding/logo";
 import { SiteFooter } from "@/components/layout/footer";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { APP_NAME, IDENTITY_NOTICE, PHASE_LABEL } from "@/lib/constants";
+import { APP_NAME, APP_TAGLINE, IDENTITY_NOTICE, PHASE_LABEL } from "@/lib/constants";
 import { SignedIn, SignedOut } from "@/lib/auth/gates";
 
 export const Route = createFileRoute("/")({ component: Home });
@@ -19,8 +19,8 @@ function Home() {
             <Link to="/login">
               <Button variant="ghost">Sign in</Button>
             </Link>
-            <Link to="/signup">
-              <Button>Create account</Button>
+            <Link to="/early-access">
+              <Button>Request early access</Button>
             </Link>
           </SignedOut>
           <SignedIn>
@@ -35,26 +35,38 @@ function Home() {
           {PHASE_LABEL} · Independent platform
         </p>
         <h1 className="mt-4 max-w-3xl font-display text-4xl leading-tight text-fg sm:text-6xl">
-          Secure ownership infrastructure for vehicles, titles, and identity.
+          {APP_TAGLINE}
         </h1>
         <p className="mt-5 max-w-2xl text-base leading-relaxed text-muted sm:text-lg">
-          {APP_NAME} is a private technology and workflow layer for customers,
+          Secure identity verification. Organized documentation. Clear workflow
+          tracking. {APP_NAME} is a private technology layer for customers,
           operators, and future authorized providers. It is not a DMV, AAMVA,
           NMVTIS, or government-authorized service.
         </p>
         <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-          <Link to="/signup">
+          <Link to="/early-access">
             <Button size="lg" className="w-full sm:w-auto">
-              Create an account
+              Request early access
               <ArrowRight className="size-4" />
             </Button>
           </Link>
-          <Link to="/login">
+          <Link to="/early-access" search={{ intent: "demo" }}>
             <Button size="lg" variant="secondary" className="w-full sm:w-auto">
-              Sign in
+              Request a business demo
             </Button>
           </Link>
         </div>
+        <p className="mt-3 text-sm text-muted">
+          Already invited?{" "}
+          <Link to="/login" className="underline text-fg">
+            Sign in
+          </Link>
+          {" "}or{" "}
+          <Link to="/signup" className="underline text-fg">
+            create an account
+          </Link>
+          .
+        </p>
         <p className="mt-6 max-w-2xl text-sm text-muted">{IDENTITY_NOTICE}</p>
         <div className="mt-14 grid gap-4 md:grid-cols-3">
           <Card>
