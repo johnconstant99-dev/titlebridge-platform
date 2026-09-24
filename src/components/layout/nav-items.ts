@@ -2,6 +2,7 @@ import type { Permission } from "@/lib/rbac";
 
 export const CUSTOMER_NAV = [
   { to: "/app", label: "Overview", icon: "layout" },
+  { to: "/app/identity", label: "Identity", icon: "shield" },
   { to: "/app/vehicles", label: "My Vehicles", icon: "car" },
   { to: "/app/cases", label: "My Cases", icon: "folder" },
   { to: "/app/documents", label: "Documents", icon: "file" },

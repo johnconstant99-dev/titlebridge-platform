@@ -1,5 +1,7 @@
 import type { IntegrationAdapter, IntegrationEnvironment, ProviderType } from "./types.ts";
 import { createPlaceholderAdapter } from "./adapter.ts";
+import { identityAdapter } from "./identity/index.ts";
+import { plaidConfig } from "./plaid/env.ts";
 
 const TYPES: { type: ProviderType; name: string }[] = [
   { type: "identity", name: "Identity verification" },
@@ -18,19 +20,32 @@ const TYPES: { type: ProviderType; name: string }[] = [
 const ENVIRONMENTS: IntegrationEnvironment[] = ["sandbox", "staging", "production"];
 
 export function listAdapters(): IntegrationAdapter[] {
-  return TYPES.flatMap((item) =>
-    ENVIRONMENTS.map((environment) =>
+  return TYPES.flatMap((item) => {
+    if (item.type === "identity") return [identityAdapter()];
+    return ENVIRONMENTS.map((environment) =>
       createPlaceholderAdapter(item.type, `${item.name} (${environment})`, environment),
-    ),
-  );
+    );
+  });
 }
 
 export function catalogEntries() {
-  return TYPES.map((item) => ({
-    providerType: item.type,
-    providerName: item.name,
-    environments: ENVIRONMENTS,
-    status: "not_configured" as const,
-    message: "Provider not configured",
-  }));
+  const plaid = plaidConfig();
+  return TYPES.map((item) => {
+    if (item.type === "identity" && plaid.configured) {
+      return {
+        providerType: item.type,
+        providerName: "Plaid Identity Verification",
+        environments: [plaid.env],
+        status: "configured" as const,
+        message: `Plaid ${plaid.env} is configured. Government title filing is still not live.`,
+      };
+    }
+    return {
+      providerType: item.type,
+      providerName: item.name,
+      environments: ENVIRONMENTS,
+      status: "not_configured" as const,
+      message: "Provider not configured",
+    };
+  });
 }
