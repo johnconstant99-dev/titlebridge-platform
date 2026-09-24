@@ -8,7 +8,7 @@ import { getIdentityVerification } from "@/integrations/plaid/client";
 
 export async function getOwnIdentityVerification(actor: Actor) {
   const sql = await getSql();
-  const rows = await sql.query<{ 
+  const rows = await sql.query<{
     id: string;
     status: string;
     provider: string;
@@ -64,10 +64,10 @@ export async function startOwnIdentityVerification(actor: Actor, input: { gaveCo
   }
   await writeAudit({
     actorUserId: actor.userId,
-    actorRole: actor.role,
+    actorRole: actor.roles[0] ?? null,
     action: "identity.verification.started",
-    entityType: "identity_verification_records",
-    entityId: id,
+    resourceType: "identity_verification_records",
+    resourceId: id,
   });
   return getOwnIdentityVerification(actor);
 }
@@ -85,10 +85,10 @@ export async function refreshOwnIdentityVerification(actor: Actor) {
   );
   await writeAudit({
     actorUserId: actor.userId,
-    actorRole: actor.role,
+    actorRole: actor.roles[0] ?? null,
     action: "identity.verification.refreshed",
-    entityType: "identity_verification_records",
-    entityId: current.record?.id,
+    resourceType: "identity_verification_records",
+    resourceId: current.record?.id,
   });
   return getOwnIdentityVerification(actor);
 }
