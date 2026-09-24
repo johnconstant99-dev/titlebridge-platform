@@ -18,9 +18,15 @@ async function plaidRequest(path: string, body: Record<string, unknown>): Promis
   });
   const json = (await response.json()) as PlaidJson;
   if (!response.ok) {
-    const errorMessage =
+    const raw =
       typeof json.error_message === "string" ? json.error_message : `Plaid request failed (${response.status})`;
-    throw new Error(errorMessage);
+    const code = typeof json.error_code === "string" ? json.error_code : "";
+    if (code === "INVALID_CLIENT_ID" || /invalid client_id or secret/i.test(raw)) {
+      throw new Error(
+        `Plaid rejected the ${config.env} keys. In the Plaid Dashboard open the ${config.env} toggle, copy Client ID + the ${config.env} secret from the same team, then replace PLAID_CLIENT_ID and PLAID_SECRET in Vercel Production and redeploy.`,
+      );
+    }
+    throw new Error(raw);
   }
   return json;
 }
@@ -28,7 +34,7 @@ async function plaidRequest(path: string, body: Record<string, unknown>): Promis
 export async function createIdentityVerification(input: {
   clientUserId: string;
   email?: string | null;
-gaveConsent: boolean;
+  gaveConsent: boolean;
 }) {
   const config = plaidConfig();
   if (!config.templateId) throw new Error("PLAID_TEMPLATE_ID is required");
