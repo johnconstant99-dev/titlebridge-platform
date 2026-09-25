@@ -2,8 +2,10 @@ import { createPlaceholderAdapter } from "../adapter";
 import { plaidConfig } from "../plaid/env";
 import { createIdentityVerification, getIdentityVerification } from "../plaid/client";
 import type { AdapterResult, IntegrationAdapter, IntegrationEnvironment } from "../types";
+import { evaluateIdentityDecision, type IdentityStatus } from "./decision";
 
-export function mapPlaidStatus(status: string | undefined): "pending" | "verified" | "failed" | "expired" | "manual_review" {
+/** @deprecated Prefer evaluateIdentityDecision for full payload mapping. */
+export function mapPlaidStatus(status: string | undefined): IdentityStatus {
   switch (status) {
     case "success":
       return "verified";
@@ -13,11 +15,14 @@ export function mapPlaidStatus(status: string | undefined): "pending" | "verifie
     case "expired":
       return "expired";
     case "pending_review":
-      return "manual_review";
+      return "needs_review";
     default:
       return "pending";
   }
 }
+
+export { evaluateIdentityDecision };
+export type { IdentityStatus, CheckOutcomes } from "./decision";
 
 export function identityAdapter(): IntegrationAdapter {
   const config = plaidConfig();
@@ -31,7 +36,13 @@ export function identityAdapter(): IntegrationAdapter {
     environment,
     configured: true,
     async execute(request) {
-      const data = request as { action?: string; clientUserId?: string; sessionId?: string; email?: string; gaveConsent?: boolean };
+      const data = request as {
+        action?: string;
+        clientUserId?: string;
+        sessionId?: string;
+        email?: string;
+        gaveConsent?: boolean;
+      };
       if (data.action === "get" && data.sessionId) {
         const session = await getIdentityVerification(data.sessionId);
         return { ok: true, data: session } satisfies AdapterResult<typeof session>;
