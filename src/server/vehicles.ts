@@ -27,6 +27,7 @@ import { assertPermission, type Actor } from "./actor";
 import { writeAudit } from "./audit";
 import { newId } from "./ids";
 import { putDocumentBlob, signDocumentAccess } from "./vault";
+import { assertIdentityVerified } from "./identity";
 
 function toIso(value: unknown): string {
   if (value instanceof Date) return value.toISOString();
@@ -418,6 +419,7 @@ export async function listOwnDocuments(actor: Actor): Promise<DocumentRecord[]> 
 
 export async function uploadDocument(actor: Actor, input: unknown) {
   assertPermission(actor, "document:write:own");
+  await assertIdentityVerified(actor);
   const data = parseOrThrow(uploadDocumentSchema, input);
   let ownerUserId = actor.userId;
   if (data.vehicleId) {
