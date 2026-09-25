@@ -33,6 +33,12 @@ export function isHostedProduction(env: NodeJS.ProcessEnv = process.env): boolea
   return isVercelRuntime(env);
 }
 
+function cleanEnv(value: string | undefined): string | undefined {
+  if (!value) return undefined;
+  const trimmed = value.trim().replace(/^['"]|['"]$/g, "").trim();
+  return trimmed.length ? trimmed : undefined;
+}
+
 export function assertHostedProductionConfig(input: {
   env?: NodeJS.ProcessEnv;
   databaseUrl?: string | null;
@@ -48,6 +54,15 @@ export function assertHostedProductionConfig(input: {
   if (!env.BETTER_AUTH_SECRET?.trim()) {
     throw new Error(
       "BETTER_AUTH_SECRET is required in hosted production. TitleBridge will not start with an ephemeral preview secret.",
+    );
+  }
+  const plaidClientId = cleanEnv(env.PLAID_CLIENT_ID);
+  const plaidSecret = cleanEnv(env.PLAID_SECRET);
+  const plaidTemplate =
+    cleanEnv(env.PLAID_TEMPLATE_ID) || cleanEnv(env.PLAID_IDV_TEMPLATE_ID);
+  if (!plaidClientId || !plaidSecret || !plaidTemplate) {
+    throw new Error(
+      "PLAID_CLIENT_ID, PLAID_SECRET, and PLAID_TEMPLATE_ID (or PLAID_IDV_TEMPLATE_ID) are required in hosted production.",
     );
   }
 }

@@ -17,6 +17,7 @@ import {
   titleInfoSchema,
 } from "@/lib/validation";
 import { assertPermission, type Actor } from "./actor";
+import { assertIdentityVerified } from "./identity";
 import { writeAudit } from "./audit";
 import { newId } from "./ids";
 import { mapAudit } from "./mappers";
@@ -322,6 +323,7 @@ export async function advanceTitleCase(actor: Actor, titleCaseId: string, step: 
 }
 
 export async function submitTitleCase(actor: Actor, titleCaseId: string) {
+  await assertIdentityVerified(actor);
   const current = await getAccessibleTitleCase(actor, titleCaseId);
   if (current.titleCase.customerId !== actor.userId) throw new ForbiddenError();
   if (

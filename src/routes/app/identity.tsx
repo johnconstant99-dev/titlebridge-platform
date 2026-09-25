@@ -8,6 +8,20 @@ import { getIdentityVerificationFn, refreshIdentityVerificationFn, startIdentity
 
 export const Route = createFileRoute("/app/identity")({ component: IdentityPage });
 
+function statusTone(status: string | undefined) {
+  switch (status) {
+    case "verified":
+      return "success" as const;
+    case "needs_review":
+      return "pine" as const;
+    case "failed":
+    case "expired":
+      return undefined;
+    default:
+      return undefined;
+  }
+}
+
 function IdentityPage() {
   const query = useQuery({ queryKey: ["identity"], queryFn: () => getIdentityVerificationFn() });
   const [busy, setBusy] = useState(false);
@@ -52,14 +66,19 @@ function IdentityPage() {
         <h2 className="mt-2 font-display text-2xl">Verify when required</h2>
         <p className="mt-2 text-sm text-muted">
           {query.data?.configured
-            ? `Connected to Plaid ${query.data.environment}.`
+            ? `Connected to Plaid ${query.data.environment}. Title cases and document uploads require a verified identity.`
             : "Plaid credentials are not on this environment yet. Add PLAID_CLIENT_ID, PLAID_SECRET, and PLAID_TEMPLATE_ID."}
         </p>
         <div className="mt-4 flex items-center justify-between rounded-md bg-stone px-3 py-3 text-sm">
           <span>Current status</span>
-          <Badge>{record?.status?.replaceAll("_", " ") ?? "not started"}</Badge>
+          <Badge tone={statusTone(record?.status)}>
+            {record?.status?.replaceAll("_", " ") ?? "not started"}
+          </Badge>
         </div>
-        {record?.shareable_url ? (
+        {record?.decision_reason ? (
+          <p className="mt-2 text-xs text-muted">Decision: {record.decision_reason}</p>
+        ) : null}
+        {record?.shareable_url && record.status !== "verified" ? (
           <a className="mt-4 inline-block text-sm underline" href={record.shareable_url} target="_blank" rel="noreferrer">
             Continue Plaid verification
           </a>
