@@ -126,16 +126,28 @@ const v0PreviewOrigins = [
     : undefined,
 ].filter((origin): origin is string => Boolean(origin));
 
-const staticTrustedOrigins: string[] = explicitBaseURL
-  ? [explicitBaseURL, ...v0PreviewOrigins, ...LOCAL_DEV_ORIGINS]
-  : [
-      // Host wildcards (matched against Origin)
-      ...previewAllowedHosts,
-      // Full-origin wildcards (matched against Origin)
-      ...previewAllowedHosts.flatMap((host) => [`https://${host}`, `http://${host}`]),
-      ...v0PreviewOrigins,
-      ...LOCAL_DEV_ORIGINS,
-    ];
+const TITLEBRIDGE_PRODUCTION_ORIGINS: string[] = [
+  "https://app.titlebridge.org",
+  "https://titlebridge.org",
+  "https://www.titlebridge.org",
+];
+
+const staticTrustedOrigins: string[] = [
+  ...TITLEBRIDGE_PRODUCTION_ORIGINS,
+
+  ...(explicitBaseURL
+    ? [explicitBaseURL]
+    : [
+        ...previewAllowedHosts,
+        ...previewAllowedHosts.flatMap((host) => [
+          `https://${host}`,
+          `http://${host}`,
+        ]),
+      ]),
+
+  ...v0PreviewOrigins,
+  ...LOCAL_DEV_ORIGINS,
+];
 
 // The preview proxy can rotate between v0.build and vercel.run hosts without
 // exposing the active host as an environment variable. Trust only the signed
