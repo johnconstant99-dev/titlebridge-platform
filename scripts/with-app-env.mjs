@@ -112,15 +112,23 @@ function main(argv) {
   }
   const env = mergeAppEnv(readAppEnv(projectRoot()), process.env);
   const isWindows = process.platform === "win32";
-  const executable = isWindows ? process.execPath : command;
-  const executableArgs = isWindows
-    ? [join(projectRoot(), "node_modules", "vite", "bin", "vite.js"), ...args]
+  const isVite = command === "vite";
+
+  const executable =
+  isWindows && isVite ? process.execPath : command;
+
+  const executableArgs =
+    isWindows && isVite
+      ? [
+          join(projectRoot(), "node_modules", "vite", "bin", "vite.js"),
+          ...args,
+      ]
     : args;
 
   const child = spawn(executable, executableArgs, {
     stdio: "inherit",
-  env,
-});  
+    env,
+});
 
 // The dev server is long-running and is stopped by signalling this wrapper.
   for (const signal of ["SIGINT", "SIGTERM", "SIGHUP"]) {
